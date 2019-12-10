@@ -67,16 +67,16 @@ for (word, idx) in word_index.items():
 
 # Assigning labels to the depressive tweets and random tweets data
 
-labels_c = [x for x in collected_tweet_df["label"]]
+labels = [x for x in ing["cuisine"]]
 
-data_train = data_c[0:int(5000 * TRAIN_SPLIT)]
-labels_train = labels_c[0:int(5000 * TRAIN_SPLIT)]
+data_train = data_c[0:int(RANDOM_NROWS * TRAIN_SPLIT)]
+labels_train = labels[0:int(RANDOM_NROWS * TRAIN_SPLIT)]
 
-data_test = data_c[int(5000 * TRAIN_SPLIT):int(5000 * (TEST_SPLIT + TRAIN_SPLIT))]
-labels_test = labels_c[int(5000 * TRAIN_SPLIT):int(5000 * (TEST_SPLIT + TRAIN_SPLIT))]
+data_test = data_c[int(RANDOM_NROWS * TRAIN_SPLIT):int(RANDOM_NROWS * (TEST_SPLIT + TRAIN_SPLIT))]
+labels_test = labels[int(RANDOM_NROWS * TRAIN_SPLIT):int(RANDOM_NROWS * (TEST_SPLIT + TRAIN_SPLIT))]
 
-data_val = data_c[int(5000 * (TEST_SPLIT + TRAIN_SPLIT)):5000]
-labels_val = labels_c[int(5000 * (TEST_SPLIT + TRAIN_SPLIT)):5000]
+data_val = data_c[int(RANDOM_NROWS * (TEST_SPLIT + TRAIN_SPLIT)):RANDOM_NROWS]
+labels_val = labels[int(RANDOM_NROWS * (TEST_SPLIT + TRAIN_SPLIT)):RANDOM_NROWS]
 
 model = brain(embedding_matrix, EMBEDDING_DIM, MAX_SEQUENCE_LENGTH)
 print(model.summary())
