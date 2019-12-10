@@ -19,8 +19,8 @@ warnings.filterwarnings("ignore")
 np.random.seed(1234)
 
 RANDOM_NROWS = 38000
-MAX_SEQUENCE_LENGTH = 150
-MAX_NB_WORDS = 3000
+MAX_SEQUENCE_LENGTH = 300
+MAX_NB_WORDS = 3200
 EMBEDDING_DIM = 300
 
 # Splitting the arrays into test (70%), validation (20%), and train data (20%)
@@ -81,38 +81,49 @@ labels_val = labels[int(RANDOM_NROWS * (TEST_SPLIT + TRAIN_SPLIT)):RANDOM_NROWS]
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix, roc_auc_score, classification_report
-#Decision tree
+# Decision tree
 from sklearn import tree
+
 clf = tree.DecisionTreeClassifier()
 clf = clf.fit(data_train, labels_train)
-pred=clf.predict(data_test)
-matrix = confusion_matrix(labels_test,pred)
+pred = clf.predict(data_test)
+matrix = confusion_matrix(labels_test, pred)
 print(matrix)
-print(classification_report(labels_test,pred))
-print(roc_auc_score(labels_test,pred))
-#base model
+print(classification_report(labels_test, pred))
+print(roc_auc_score(labels_test, pred))
+# base model
 
 
+model = brain(embedding_matrix, EMBEDDING_DIM, MAX_SEQUENCE_LENGTH)
+print(model.summary())
 
+early_stop = EarlyStopping(monitor='val_loss', patience=3)
+model.compile(loss='categorical_crossentropy', optimizer='nadam', metrics=['acc'])
 
-# model = brain(embedding_matrix, EMBEDDING_DIM, MAX_SEQUENCE_LENGTH)
-# print(model.summary())
-#
-# early_stop = EarlyStopping(monitor='val_loss', patience=3)
-# model.compile(loss='binary_crossentropy', optimizer='nadam', metrics=['acc'])
-#
-# hist = model.fit(data_train, labels_train, validation_data=(data_val, labels_val), epochs=EPOCHS, batch_size=100,
-#                  shuffle=True, callbacks=[early_stop])
-#
-# labels_c_pred = model.predict(data_test)
-#
-# labels_pred = np.round(labels_c_pred.flatten())
-#
-# accuracy = accuracy_score(labels_test, labels_pred)
-# print("Accuracy: %.2f%%" % (accuracy * 100))
-#
-# print(classification_report(labels_test, labels_pred))
-#
-# model_name = "with_5000_dataset_acc={}".format(accuracy)
-# model.save(model_name)
-#
+hist = model.fit(data_train, labels_train, validation_data=(data_val, labels_val), epochs=EPOCHS, batch_size=100,
+                 shuffle=True, callbacks=[early_stop])
+
+labels_c_pred = model.predict(data_test)
+
+labels_pred = np.round(labels_c_pred.flatten())
+
+accuracy = accuracy_score(labels_test, labels_pred)
+print("Accuracy: %.2f%%" % (accuracy * 100))
+
+print(classification_report(labels_test, labels_pred))
+
+model_name = "with_5000_dataset_acc={}".format(accuracy)
+model.save(model_name)
+
+import numpy as np
+from sklearn.preprocessing import Imputer
+from sklearn.cross_validation import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+
+for K in range(25):
+    K_value = K + 1
+    neigh = KNeighborsClassifier(n_neighbors=K_value, weights='uniform', algorithm='auto')
+    neigh.fit(data_train, labels_train)
+    y_pred = neigh.predict(data_test)
+    print("Accuracy is ", accuracy_score(labels_test, y_pred) * 100, "% for K-Value:", K_value)
