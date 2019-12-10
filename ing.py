@@ -78,24 +78,41 @@ labels_test = labels[int(RANDOM_NROWS * TRAIN_SPLIT):int(RANDOM_NROWS * (TEST_SP
 data_val = data_c[int(RANDOM_NROWS * (TEST_SPLIT + TRAIN_SPLIT)):RANDOM_NROWS]
 labels_val = labels[int(RANDOM_NROWS * (TEST_SPLIT + TRAIN_SPLIT)):RANDOM_NROWS]
 
-model = brain(embedding_matrix, EMBEDDING_DIM, MAX_SEQUENCE_LENGTH)
-print(model.summary())
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix, roc_auc_score, classification_report
+#Decision tree
+from sklearn import tree
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(data_train, labels_train)
+pred=clf.predict(data_test)
+matrix = confusion_matrix(labels_test,pred)
+print(matrix)
+print(classification_report(labels_test,pred))
+print(roc_auc_score(labels_test,pred))
+#base model
 
-early_stop = EarlyStopping(monitor='val_loss', patience=3)
-model.compile(loss='binary_crossentropy', optimizer='nadam', metrics=['acc'])
 
-hist = model.fit(data_train, labels_train, validation_data=(data_val, labels_val), epochs=EPOCHS, batch_size=100,
-                 shuffle=True, callbacks=[early_stop])
 
-labels_c_pred = model.predict(data_test)
 
-labels_pred = np.round(labels_c_pred.flatten())
-
-accuracy = accuracy_score(labels_test, labels_pred)
-print("Accuracy: %.2f%%" % (accuracy * 100))
-
-print(classification_report(labels_test, labels_pred))
-
-model_name = "with_5000_dataset_acc={}".format(accuracy)
-model.save(model_name)
-
+# model = brain(embedding_matrix, EMBEDDING_DIM, MAX_SEQUENCE_LENGTH)
+# print(model.summary())
+#
+# early_stop = EarlyStopping(monitor='val_loss', patience=3)
+# model.compile(loss='binary_crossentropy', optimizer='nadam', metrics=['acc'])
+#
+# hist = model.fit(data_train, labels_train, validation_data=(data_val, labels_val), epochs=EPOCHS, batch_size=100,
+#                  shuffle=True, callbacks=[early_stop])
+#
+# labels_c_pred = model.predict(data_test)
+#
+# labels_pred = np.round(labels_c_pred.flatten())
+#
+# accuracy = accuracy_score(labels_test, labels_pred)
+# print("Accuracy: %.2f%%" % (accuracy * 100))
+#
+# print(classification_report(labels_test, labels_pred))
+#
+# model_name = "with_5000_dataset_acc={}".format(accuracy)
+# model.save(model_name)
+#
