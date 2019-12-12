@@ -1,14 +1,5 @@
-import csv
-import pandas as pd
-import warnings
-import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from gensim.models import KeyedVectors
-
-from keras.callbacks import EarlyStopping
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
 
 file_name = 'ingredients.csv'
 
@@ -44,4 +35,13 @@ neigh.fit(X_train, y_train)
 y_pred = neigh.predict(X_test)
 y_prob = neigh.predict_proba(X_test)
 print("Accuracy is ", accuracy_score(y_test, y_pred) * 100, "% for K-Value:", K_value)
+
+grocery_file = 'groceries.csv'
+dfg = pd.read_csv(grocery_file, encoding="ISO-8859-1")
+print(dfg.head)
+temp_g = dfg['item']
+
+vectorizer = TfidfVectorizer()
+Xt = vectorizer.fit_transform( dfg['item'])
+y_pred = neigh.predict(Xt)
 
