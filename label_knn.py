@@ -5,12 +5,30 @@ file_name = 'ingredients.csv'
 
 df = pd.read_csv(file_name, encoding="ISO-8859-1", usecols=range(0, 3))
 print(df.head)
-df['copy_ingredients'] = df['ingredients']
+df['ingredients']
+
+grocery_file = 'groceries.csv'
+dfg = pd.read_csv(grocery_file, encoding="ISO-8859-1")
+dfg['item']
+
+temp = []
+for i in range(len(df['ingredients'])):
+    temp.append( df['ingredients'][i])
+
+for i in range(len(dfg['item'])):
+    temp.append( dfg['item'][i])
+
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(df['copy_ingredients'])
+X_total = vectorizer.fit_transform(temp)
+
+
+gro_ind = 39774
+X = X_total[:gro_ind]
 print(X)
+
+X_label = X_total[gro_ind:]
 
 Y = []
 Y = df['cuisine']
@@ -22,26 +40,13 @@ from sklearn.metrics import accuracy_score
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=100)
 
-for K in range(25):
-    K_value = K + 1
-    neigh = KNeighborsClassifier(n_neighbors=K_value, weights='distance', algorithm='auto',  n_jobs=-1)
-    neigh.fit(X_train, y_train)
-    y_pred = neigh.predict(X_test)
-    print("Accuracy is ", accuracy_score(y_test, y_pred) * 100, "% for K-Value:", K_value)
-neigh.predict_proba(X_test)
-
 neigh = KNeighborsClassifier(n_neighbors=16, weights='distance', algorithm='auto',  n_jobs=-1, p=2)
 neigh.fit(X_train, y_train)
 y_pred = neigh.predict(X_test)
 y_prob = neigh.predict_proba(X_test)
-print("Accuracy is ", accuracy_score(y_test, y_pred) * 100, "% for K-Value:", K_value)
+print("Accuracy is ", accuracy_score(y_test, y_pred) * 100, "% for K-Value:", 16)
 
-grocery_file = 'groceries.csv'
-dfg = pd.read_csv(grocery_file, encoding="ISO-8859-1")
-print(dfg.head)
-temp_g = dfg['item']
-
-vectorizer = TfidfVectorizer()
-Xt = vectorizer.fit_transform( dfg['item'])
-y_pred = neigh.predict(Xt)
+label_pred = neigh.predict(X_label)
+label_pred_prob = neigh.predict_proba(X_label)
+# use label_pred_prob to find out two most probable cuisine and write them in groceries.csv file
 
