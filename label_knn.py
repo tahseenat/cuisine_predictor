@@ -40,14 +40,6 @@ from sklearn.metrics import accuracy_score
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=100)
 
-# for K in range(25):
-#     K_value = K + 1
-#     neigh = KNeighborsClassifier(n_neighbors=K_value, weights='distance', algorithm='auto',  n_jobs=-1)
-#     neigh.fit(X_train, y_train)
-#     y_pred = neigh.predict(X_test)
-#     print("Accuracy is ", accuracy_score(y_test, y_pred) * 100, "% for K-Value:", K_value)
-# neigh.predict_proba(X_test)
-
 neigh = KNeighborsClassifier(n_neighbors=16, weights='distance', algorithm='auto',  n_jobs=-1, p=2)
 neigh.fit(X_train, y_train)
 y_pred = neigh.predict(X_test)
